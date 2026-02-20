@@ -1,25 +1,59 @@
-import requests
-import json
-
-url = "https://api.fda.gov/device/classification.json"
-params = {
-    "search": "medical_specialty:DE",
-    "limit": 10
-}
-
-r = requests.get(url, params=params)
-
-print(f"Status Code: {r.status_code}")
-print(r.json())
+# FastAPI reads paths liner my line, is value has same path it will be overriden with earlier one
+from fastapi import FastAPI
+from typing import Optional
+from pydantic import BaseModel
 
 
-# from fastapi import FastAPI
-# from typing import Optional
-# from pydantic import BaseModel
+# to initialize: uvicorn main:app --reload
 
-# app = FastAPI()
+app = FastAPI()
 
-# @app.get("/devices")
+# default, returns for root link (localhost:8000/)
+# adding /docs at the end will get you a Swagger UI representation of your endpoints
+# adding /redoc gives redoc representation
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+# # new endpoint, responds to (localhost:8000/items/#?q=value)
+# # ? signifies beginning of query
+# # {} makes value dynamic
+# @app.get("/items/{item_id}")
+
 # # in function specify type
 # def read_item(item_id: int, q: str | None = None):
 #     return {"item_id": item_id, "q": q}
+
+# #################################
+# @app.get("/blog")
+# # query params specified in function, not endpoint
+# def index(limit: int, published: bool, sort: Optional[str] = None):
+#     if published:
+#         return {"data": f"{limit} published blogs from the db"}
+#     else:
+#        return {"data": f"{limit} unpublished blogs from the db"} 
+    
+class User(BaseModel):
+    name:str
+    user_id: str
+
+db = []
+
+@app.post("/user")
+def create_user(user:User):
+    # use dot notation to access base model;
+    for user in db:
+        if user.name == user:
+            raise HTTPException(status_code=409, detail = "Username already exists")
+    user_info = {"user_id": user.name, "name": user.user_id}
+    db.append(user_info)
+    return user_info
+    
+@app.get("/user/{id}")
+# automatically identifies the first input as a path parameter
+# knows the rest are query parameters
+def get_user(id):
+    return "hi"
+    
+
+
