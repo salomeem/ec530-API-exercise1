@@ -71,5 +71,13 @@ def put_text(user_id: int, text: AddText):
             return acc
     raise HTTPException(status_code=404, detail="User not found")
     
-
-
+@app.get("/user/text")
+def get_text(user_id: int):
+    for acc in db:
+        if acc["user_id"] == user_id:
+            if "text" in acc:
+                return acc["text"]
+            else:
+                raise HTTPException(status_code=404, detail="Text not found")
+        else:
+            continue
