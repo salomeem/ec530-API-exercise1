@@ -9,7 +9,22 @@ from fastapi import HTTPException
 
 app = FastAPI()
 
-db = []
+db = [
+    {
+       "name": "bob", 
+       "user_id": 1
+    },
+    {
+       "name": "ally", 
+       "user_id": 2
+    },
+    {
+       "name": "matt", 
+       "user_id": 3
+    }
+]
+    
+
 
 @app.get("/database")
 # shows db
@@ -18,7 +33,7 @@ def read_root():
     
 class User(BaseModel):
     name:str
-    user_id: str
+    user_id: int
 
 @app.post("/user")
 # function to add user to db
@@ -34,7 +49,7 @@ def create_user(user:User):
     
 @app.get("/user/{id}")
 # function to get userid from db
-def get_user(id):
+def get_user(id: int):
     count = 0
     sz = len(db)
     for acc in db:
@@ -43,6 +58,18 @@ def get_user(id):
         count += 1
         if count == sz:
             raise HTTPException(status_code=409, detail = "Account not found") 
+    
+
+class AddText(BaseModel):
+    text: str
+
+@app.put("/user")
+def put_text(user_id: int, text: AddText):
+    for acc in db:
+        if acc["user_id"] == user_id:
+            acc["text"] = text.text
+            return acc
+    raise HTTPException(status_code=404, detail="User not found")
     
 
 
