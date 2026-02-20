@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from typing import Optional
 from pydantic import BaseModel
+from fastapi import HTTPException
 
 
 # to initialize: uvicorn main:app --reload
@@ -42,12 +43,13 @@ db = []
 @app.post("/user")
 def create_user(user:User):
     # use dot notation to access base model;
-    for user in db:
-        if user.name == user:
+    for acc in db:
+        print(user)
+        if user.name == acc["name"]:
             raise HTTPException(status_code=409, detail = "Username already exists")
-    user_info = {"user_id": user.name, "name": user.user_id}
+    user_info = {"name": user.name, "user_id": user.user_id}
     db.append(user_info)
-    return user_info
+    return db
     
 @app.get("/user/{id}")
 # automatically identifies the first input as a path parameter
